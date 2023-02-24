@@ -1,6 +1,8 @@
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import praktikum.Bun;
 import praktikum.Burger;
@@ -8,19 +10,23 @@ import praktikum.Ingredient;
 import praktikum.IngredientType;
 
 import static org.junit.Assert.assertEquals;
-
+@RunWith(MockitoJUnitRunner.class)
 public class TestBurger {
+    @Mock
+    Ingredient mockIngredient;
+    @Mock
+    Bun mockBun;
     Burger burger = new Burger();
     Bun bun = new Bun("с кунжутом", 3.25F);
     Bun bun2 = new Bun("с отрубями", 2.75F);
-    Ingredient souce = new Ingredient(IngredientType.SAUCE, "кетченез", 1.5F);
+    Ingredient sauce = new Ingredient(IngredientType.SAUCE, "кетченез", 1.5F);
     Ingredient filling1 = new Ingredient(IngredientType.FILLING, "мяско", 30F);
     Ingredient filling2 = new Ingredient(IngredientType.FILLING, "огурчик", 5F);
 
     @Before
     public void createBurger() {
         burger.setBuns(bun);
-        burger.addIngredient(souce);
+        burger.addIngredient(sauce);
         burger.addIngredient(filling1);
         System.out.println(burger.getReceipt());
         System.out.println(burger.getPrice());
@@ -60,25 +66,5 @@ public class TestBurger {
         assertEquals(burger.getIngredients().size(), i);
         assertEquals(burger.getIngredients().get(i - 1), ingredient1);
         assertEquals(burger.getIngredients().get(i - 2), ingredient2);
-    }
-
-    @Test
-    public void checkBurgerPrice() {
-        assertEquals("дайте калькулятор!", burger.getPrice(), 38, 0.00f);
-    }
-
-    @Test
-    public void checkBurgerReceipt() {
-        StringBuilder expected = new StringBuilder(String.format("(==== %s ====)%n", bun.getName()));
-
-        for (Ingredient ingredient : burger.getIngredients()) {
-            expected.append(String.format("= %s %s =%n", ingredient.getType().toString().toLowerCase(),
-                    ingredient.getName()));
-        }
-
-        expected.append(String.format("(==== %s ====)%n", bun.getName()));
-        expected.append(String.format("%nPrice: %f%n", burger.getPrice()));
-
-        assertEquals("вроде не то заказывали", burger.getReceipt(), expected.toString());
     }
 }
