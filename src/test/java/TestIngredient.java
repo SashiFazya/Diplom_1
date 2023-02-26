@@ -1,3 +1,4 @@
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -8,7 +9,15 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(Parameterized.class)
 public class TestIngredient {
+    private Ingredient ingredient;
     private final IngredientType ingredType;
+    private final String ingredName = "someName";
+    private final float ingredPrice = (float) 13.0987;
+
+    @Before
+    public void preset() {
+        ingredient = new Ingredient(ingredType, ingredName, ingredPrice);
+    }
 
     public TestIngredient(IngredientType ingredType) {
         this.ingredType = ingredType;
@@ -23,16 +32,17 @@ public class TestIngredient {
     }
 
     @Test
-    public void test1() {
-        String ingredName = "someName";
-        float ingredPrice = (float) 13.0987;
-        Ingredient ingredient = new Ingredient(ingredType, ingredName, ingredPrice);
-        System.out.println(ingredType);
-        assertEquals("тип проверь", ingredient.getType(), ingredType);
-        System.out.println(ingredName);
-        assertEquals("имя проверь", ingredient.getName(), ingredName);
-        System.out.println(ingredPrice);
-        assertEquals("цену проверь", ingredient.getPrice(), ingredPrice, 0.0f);
+    public void checkIngredientType() {
+        assertEquals("Тип несовпадает!", ingredType, ingredient.getType());
+    }
 
+    @Test
+    public void checkIngredientName() {
+        assertEquals("Называется по-другому!", ingredName, ingredient.getName());
+    }
+
+    @Test
+    public void checkIngredientPrice() {
+        assertEquals("Цена не та!", ingredPrice, ingredient.getPrice(), 0.0f);
     }
 }

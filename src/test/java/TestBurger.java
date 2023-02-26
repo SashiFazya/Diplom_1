@@ -3,6 +3,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import praktikum.Bun;
 import praktikum.Burger;
@@ -13,47 +14,47 @@ import static org.junit.Assert.assertEquals;
 @RunWith(MockitoJUnitRunner.class)
 public class TestBurger {
     @Mock
-    Ingredient mockIngredient;
+    private Ingredient mockSauce;
     @Mock
-    Bun mockBun;
+    private Ingredient mockFilling1;
+    @Mock
+    private Ingredient mockFilling2;
+    @Mock
+    private Bun mockBun1;
+    @Mock
+    private Bun mockBun2;
+    @Spy
     Burger burger = new Burger();
-    Bun bun = new Bun("с кунжутом", 3.25F);
-    Bun bun2 = new Bun("с отрубями", 2.75F);
-    Ingredient sauce = new Ingredient(IngredientType.SAUCE, "кетченез", 1.5F);
-    Ingredient filling1 = new Ingredient(IngredientType.FILLING, "мяско", 30F);
-    Ingredient filling2 = new Ingredient(IngredientType.FILLING, "огурчик", 5F);
 
     @Before
     public void createBurger() {
-        burger.setBuns(bun);
-        burger.addIngredient(sauce);
-        burger.addIngredient(filling1);
-        System.out.println(burger.getReceipt());
-        System.out.println(burger.getPrice());
+        burger.setBuns(mockBun1);
+        burger.addIngredient(mockFilling1);
+        burger.addIngredient(mockSauce);
     }
 
     @Test
     public void checkBunSetting() {
-        burger.setBuns(bun2);
-        assertEquals("ты взял не ту булочку", burger.getBun(), bun2);
+        burger.setBuns(mockBun2);
+        assertEquals("ты взял не ту булочку", mockBun2, burger.getBun());
     }
 
     @Test
     public void checkIngredientsAdding() {
         int i = burger.getIngredients().size();
-        burger.addIngredient(filling2);
-        assertEquals("что-то не доложили", burger.getIngredients().size(), i + 1);
-        assertEquals("это не тот ингредиент", burger.getIngredients().get(i), filling2);
+        burger.addIngredient(mockFilling2);
+        assertEquals("что-то не доложили", i + 1, burger.getIngredients().size());
+        assertEquals("это не тот ингредиент", mockFilling2, burger.getIngredients().get(i));
     }
 
     @Test
     public void checkIngredientsRemoving() {
-        burger.addIngredient(filling2);
+        burger.addIngredient(mockFilling2);
         int ingredientsCount = burger.getIngredients().size();
         burger.removeIngredient(ingredientsCount - 2);
 
         assertEquals(burger.getIngredients().size(), ingredientsCount - 1);
-        assertEquals(burger.getIngredients().get(ingredientsCount - 2), filling2);
+        assertEquals(burger.getIngredients().get(ingredientsCount - 2), mockFilling2);
     }
 
     @Test
@@ -66,5 +67,33 @@ public class TestBurger {
         assertEquals(burger.getIngredients().size(), i);
         assertEquals(burger.getIngredients().get(i - 1), ingredient1);
         assertEquals(burger.getIngredients().get(i - 2), ingredient2);
+    }
+
+    @Test
+    public void checkBurgerPrice() {
+        Mockito.when(mockBun1.getPrice()).thenReturn(3f);
+        Mockito.when(mockFilling1.getPrice()).thenReturn(10f);
+        Mockito.when(mockSauce.getPrice()).thenReturn(10f);
+        assertEquals("дайте калькулятор!", 3 * 2 + 10+10, burger.getPrice(), 0.00f);
+    }
+
+    @Test
+    public void checkBurgerReceipt() {
+        Mockito.when(mockBun1.getName()).thenReturn("булочка");
+        Mockito.when(mockFilling1.getName()).thenReturn("вкусняшечка");
+        Mockito.when(mockFilling1.getType()).thenReturn(IngredientType.FILLING);
+        Mockito.when(mockSauce.getName()).thenReturn("соусец");
+        Mockito.when(mockSauce.getType()).thenReturn(IngredientType.SAUCE);
+        Mockito.when(burger.getPrice()).thenReturn(100500F);
+
+        String expected =
+                        "(==== булочка ====)\n" +
+                        "= filling вкусняшечка =\n" +
+                        "= sauce соусец =\n" +
+                        "(==== булочка ====)\n" +
+                        "\n" +
+                        "Price: 100500,000000\n";
+
+        assertEquals("вроде не то заказывали",  expected, burger.getReceipt());
     }
 }
