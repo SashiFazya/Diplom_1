@@ -24,7 +24,7 @@ public class TestBurger {
     @Mock
     private Bun mockBun2;
     @Spy
-    Burger burger = new Burger();
+    private Burger burger = new Burger();
 
     @Before
     public void createBurger() {
